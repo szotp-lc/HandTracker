@@ -3,6 +3,7 @@
 #import "mediapipe/objc/MPPCameraInputSource.h"
 #import "mediapipe/objc/MPPLayerRenderer.h"
 #include "mediapipe/framework/formats/landmark.pb.h"
+#include "mediapipe/framework/tool/sink.h"
 
 static NSString* const kGraphName = @"hand_tracking_mobile_gpu";
 static const char* kInputStream = "input_video";
@@ -10,24 +11,71 @@ static const char* kOutputStream = "output_video";
 static const char* kLandmarksOutputStream = "hand_landmarks";
 static const char* kVideoQueueLabel = "com.google.mediapipe.example.videoQueue";
 
+static const char* kNumHandsInputSidePacket = "num_hands";
+
 @interface HandTracker() <MPPGraphDelegate>
 @property(nonatomic) MPPGraph* mediapipeGraph;
 @end
 
-@interface Landmark()
-- (instancetype)initWithX:(float)x y:(float)y z:(float)z;
+@interface Packet ()
+@property ::mediapipe::Packet packet;
+@end
+@implementation Packet
+
+- (int64)timestampMicroseconds {
+    return self.packet.Timestamp().Microseconds();
+}
+
+- (NSArray<NSData *> *)getArrayOfProtos {
+    NSMutableArray *messages = [NSMutableArray new];
+    auto vector = self.packet.GetVectorOfProtoMessageLitePtrs().value();
+    
+    std::string serialized;
+    
+    for(auto &message: vector) {
+        auto serialized = message->SerializeAsString();
+        [messages addObject:[NSData dataWithBytes:serialized.data() length:serialized.length()]];
+        message->AppendToString(&serialized);
+    }
+
+    return messages;
+}
+
+- (NSString *)getTypeName {
+    auto name = self.packet.GetTypeId().name();
+    return [NSString stringWithCString:name.c_str() encoding:NSUTF8StringEncoding];
+}
+
 @end
 
-@implementation HandTracker {}
+@implementation HandTracker {
+}
 
 #pragma mark - Cleanup methods
 
-- (void)dealloc {
+- (void)deactivateWithCompletionHandler:(nullable DeactivateCallback)handler {
     self.mediapipeGraph.delegate = nil;
     [self.mediapipeGraph cancel];
     // Ignore errors since we're cleaning up.
     [self.mediapipeGraph closeAllInputStreamsWithError:nil];
-    [self.mediapipeGraph waitUntilDoneWithError:nil];
+    
+    MPPGraph * graph = self.mediapipeGraph;
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [graph waitUntilDoneWithError:nil];
+        
+        if (handler) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                handler();
+            });
+        }
+    });
+}
+
+- (void)dealloc {
+    if (self.mediapipeGraph) {
+        [self deactivateWithCompletionHandler: nil];
+    }
 }
 
 #pragma mark - MediaPipe graph methods
@@ -50,11 +98,23 @@ static const char* kVideoQueueLabel = "com.google.mediapipe.example.videoQueue";
     mediapipe::CalculatorGraphConfig config;
     config.ParseFromArray(data.bytes, data.length);
     
+    
     // Create MediaPipe graph with mediapipe::CalculatorGraphConfig proto object.
     MPPGraph* newGraph = [[MPPGraph alloc] initWithGraphConfig:config];
-    [newGraph addFrameOutputStream:kOutputStream outputPacketType:MPPPacketTypePixelBuffer];
-    [newGraph addFrameOutputStream:kLandmarksOutputStream outputPacketType:MPPPacketTypeRaw];
     return newGraph;
+}
+
+- (void)enableImageOutputStream {
+    [self.mediapipeGraph addFrameOutputStream:kOutputStream outputPacketType:MPPPacketTypePixelBuffer];
+}
+
+- (void)addFrameOutputStreamNamed:(NSString *)streamName {
+    std::string streamNameRaw([streamName UTF8String]);
+    [self.mediapipeGraph addFrameOutputStream:streamNameRaw outputPacketType:MPPPacketTypeRaw];
+}
+
+- (void)setNumberOfHands:(NSInteger)numberOfHands {
+    [self.mediapipeGraph setSidePacket:(mediapipe::MakePacket<int>(numberOfHands)) named:kNumHandsInputSidePacket];
 }
 
 - (instancetype)init
@@ -62,6 +122,7 @@ static const char* kVideoQueueLabel = "com.google.mediapipe.example.videoQueue";
     self = [super init];
     if (self) {
         self.mediapipeGraph = [[self class] loadGraphFromResource:kGraphName];
+        [self enableImageOutputStream];
         self.mediapipeGraph.delegate = self;
         // Set maxFramesInFlight to a small value to avoid memory contention for real-time processing.
         self.mediapipeGraph.maxFramesInFlight = 2;
@@ -83,6 +144,7 @@ static const char* kVideoQueueLabel = "com.google.mediapipe.example.videoQueue";
 - (void)mediapipeGraph:(MPPGraph*)graph
   didOutputPixelBuffer:(CVPixelBufferRef)pixelBuffer
             fromStream:(const std::string&)streamName {
+    
       if (streamName == kOutputStream) {
           [_delegate handTracker: self didOutputPixelBuffer: pixelBuffer];
       }
@@ -92,45 +154,17 @@ static const char* kVideoQueueLabel = "com.google.mediapipe.example.videoQueue";
 - (void)mediapipeGraph:(MPPGraph*)graph
        didOutputPacket:(const ::mediapipe::Packet&)packet
             fromStream:(const std::string&)streamName {
-    if (streamName == kLandmarksOutputStream) {
-        if (packet.IsEmpty()) { return; }
-        const auto& landmarks = packet.Get<::mediapipe::NormalizedLandmarkList>();
-        
-        //        for (int i = 0; i < landmarks.landmark_size(); ++i) {
-        //            NSLog(@"\tLandmark[%d]: (%f, %f, %f)", i, landmarks.landmark(i).x(),
-        //                  landmarks.landmark(i).y(), landmarks.landmark(i).z());
-        //        }
-        NSMutableArray<Landmark *> *result = [NSMutableArray array];
-        for (int i = 0; i < landmarks.landmark_size(); ++i) {
-            Landmark *landmark = [[Landmark alloc] initWithX:landmarks.landmark(i).x()
-                                                           y:landmarks.landmark(i).y()
-                                                           z:landmarks.landmark(i).z()];
-            [result addObject:landmark];
-        }
-        [_delegate handTracker: self didOutputLandmarks: result];
-    }
+
+    NSString *streamNameParsed = [NSString stringWithUTF8String:streamName.c_str()];
+    Packet *output = [Packet new];
+    output.packet = packet;
+    [_delegate handTracker:self didOutputPacket:output forStream:streamNameParsed];
 }
 
 - (void)processVideoFrame:(CVPixelBufferRef)imageBuffer {
     [self.mediapipeGraph sendPixelBuffer:imageBuffer
                               intoStream:kInputStream
                               packetType:MPPPacketTypePixelBuffer];
-}
-
-@end
-
-
-@implementation Landmark
-
-- (instancetype)initWithX:(float)x y:(float)y z:(float)z
-{
-    self = [super init];
-    if (self) {
-        _x = x;
-        _y = y;
-        _z = z;
-    }
-    return self;
 }
 
 @end

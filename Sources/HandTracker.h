@@ -4,8 +4,19 @@
 @class Landmark;
 @class HandTracker;
 
-@protocol TrackerDelegate <NSObject>
-- (void)handTracker: (HandTracker*)handTracker didOutputLandmarks: (NSArray<Landmark *> *)landmarks;
+NS_ASSUME_NONNULL_BEGIN
+
+typedef void(^DeactivateCallback)();
+
+@interface Packet: NSObject
+-(NSArray<NSData *> *)getArrayOfProtos;
+@property (readonly) NSString *getTypeName;
+@property (readonly) int64_t timestampMicroseconds;
+@property (readonly) NSDate *date;
+@end
+
+@protocol HandTrackerDelegate <NSObject>
+- (void)handTracker: (HandTracker*)handTracker didOutputPacket: (Packet *)packet forStream:(NSString *)streamName;
 - (void)handTracker: (HandTracker*)handTracker didOutputPixelBuffer: (CVPixelBufferRef)pixelBuffer;
 @end
 
@@ -13,11 +24,14 @@
 - (instancetype)init;
 - (void)startGraph;
 - (void)processVideoFrame:(CVPixelBufferRef)imageBuffer;
-@property (weak, nonatomic) id <TrackerDelegate> delegate;
+
+- (void)enableImageOutputStream;
+- (void)setNumberOfHands:(NSInteger)numberOfHands;
+- (void)deactivateWithCompletionHandler:(nullable DeactivateCallback)handler;
+
+- (void)addFrameOutputStreamNamed:(NSString *)streamName;
+
+@property (weak, nonatomic) id <HandTrackerDelegate> delegate;
 @end
 
-@interface Landmark: NSObject
-@property(nonatomic, readonly) float x;
-@property(nonatomic, readonly) float y;
-@property(nonatomic, readonly) float z;
-@end
+NS_ASSUME_NONNULL_END
