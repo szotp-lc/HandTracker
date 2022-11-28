@@ -1,5 +1,5 @@
 framework module MediaPipeHands {
-  umbrella header "HandTracker.h"
+  umbrella header "MediaPipeGraph.h"
 
   export *
   module * { export * }

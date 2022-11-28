@@ -1,18 +1,21 @@
+# bazel build HandTracker/Sources:MediaPipeHands -c opt --config=ios_arm64
+
 load("@build_bazel_rules_apple//apple:ios.bzl", "ios_framework")
 load("@build_bazel_rules_apple//apple:resources.bzl", "apple_resource_group")
 
 ios_framework(
     name = "MediaPipeHands",
     hdrs = [
-        "HandTracker.h",
+        "MediaPipeGraph.h"
     ],
     infoplists = ["Info.plist"],
     bundle_id = "dev.noppe.HandTracker",
     families = ["iphone", "ipad"],
     minimum_os_version = "11.0",
     deps = [
-        ":HandTrackerLibrary",
         "@ios_opencv//:OpencvFramework",
+        ":core",
+        ":HandTrackerLibrary"
     ],
 )
 
@@ -24,12 +27,12 @@ apple_resource_group(
 )
 
 objc_library(
-    name = "HandTrackerLibrary",
+    name = "core",
     srcs = [
-        "HandTracker.mm",
+        "MediaPipeGraph.mm"
     ],
     hdrs = [
-        "HandTracker.h",
+        "MediaPipeGraph.h"
     ],
     data = [
         ":module",
@@ -42,13 +45,26 @@ objc_library(
         "AVFoundation",
         "CoreGraphics",
         "CoreMedia",
-        "UIKit"
+        "UIKit",
+        "AssetsLibrary",
     ],
     deps = [
         "//mediapipe/objc:mediapipe_framework_ios",
         "//mediapipe/objc:mediapipe_input_sources_ios",
         "//mediapipe/objc:mediapipe_layer_renderer",
-    ] + select({
+    ],
+)
+
+
+objc_library(
+    name = "HandTrackerLibrary",
+    data = [
+        "//mediapipe/graphs/hand_tracking:hand_tracking_mobile_gpu.binarypb",
+        "//mediapipe/modules/hand_landmark:hand_landmark_full.tflite",
+        "//mediapipe/modules/hand_landmark:handedness.txt",
+        "//mediapipe/modules/palm_detection:palm_detection_full.tflite",
+    ],
+    deps = select({
         "//mediapipe:ios_i386": [],
         "//mediapipe:ios_x86_64": [],
         "//conditions:default": [
