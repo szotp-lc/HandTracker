@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -13,9 +13,8 @@
 		37EEA4142435143600750CDB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 37EEA4122435143600750CDB /* Main.storyboard */; };
 		37EEA4162435143700750CDB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 37EEA4152435143700750CDB /* Assets.xcassets */; };
 		37EEA4192435143700750CDB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 37EEA4172435143700750CDB /* LaunchScreen.storyboard */; };
-		37F84886243515500078042B /* HandTracker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 37F84885243515500078042B /* HandTracker.framework */; };
-		37F84887243515500078042B /* HandTracker.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 37F84885243515500078042B /* HandTracker.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		37F8488E243515D80078042B /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37F8488D243515D80078042B /* Camera.swift */; };
+		3D67E4C420EE3439FD56F1C8 /* Pods_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B9D7AD7576ACAE2C0D2D384 /* Pods_Example.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,7 +24,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				37F84887243515500078042B /* HandTracker.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -41,9 +39,10 @@
 		37EEA4152435143700750CDB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		37EEA4182435143700750CDB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		37EEA41A2435143700750CDB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		37F84885243515500078042B /* HandTracker.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HandTracker.framework; path = Carthage/Build/iOS/HandTracker.framework; sourceTree = "<group>"; };
-		37F84889243515600078042B /* Example-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Example-Bridging-Header.h"; sourceTree = "<group>"; };
 		37F8488D243515D80078042B /* Camera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
+		3B9D7AD7576ACAE2C0D2D384 /* Pods_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A044C3E52F7E9F119AA10B33 /* Pods-Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example.debug.xcconfig"; path = "Target Support Files/Pods-Example/Pods-Example.debug.xcconfig"; sourceTree = "<group>"; };
+		CD79B9A1357C0D0A1DD28571 /* Pods-Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example.release.xcconfig"; path = "Target Support Files/Pods-Example/Pods-Example.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,7 +50,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				37F84886243515500078042B /* HandTracker.framework in Frameworks */,
+				3D67E4C420EE3439FD56F1C8 /* Pods_Example.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -64,6 +63,7 @@
 				37EEA40B2435143600750CDB /* Example */,
 				37EEA40A2435143600750CDB /* Products */,
 				37F84884243515500078042B /* Frameworks */,
+				56181F0EBEEC959B004A5D67 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -85,7 +85,6 @@
 				37EEA4152435143700750CDB /* Assets.xcassets */,
 				37EEA4172435143700750CDB /* LaunchScreen.storyboard */,
 				37EEA41A2435143700750CDB /* Info.plist */,
-				37F84889243515600078042B /* Example-Bridging-Header.h */,
 				37F8488D243515D80078042B /* Camera.swift */,
 			);
 			path = Example;
@@ -94,9 +93,18 @@
 		37F84884243515500078042B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				37F84885243515500078042B /* HandTracker.framework */,
+				3B9D7AD7576ACAE2C0D2D384 /* Pods_Example.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		56181F0EBEEC959B004A5D67 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				A044C3E52F7E9F119AA10B33 /* Pods-Example.debug.xcconfig */,
+				CD79B9A1357C0D0A1DD28571 /* Pods-Example.release.xcconfig */,
+			);
+			path = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -106,10 +114,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 37EEA41D2435143700750CDB /* Build configuration list for PBXNativeTarget "Example" */;
 			buildPhases = (
+				C5D75D4CE908897F92040874 /* [CP] Check Pods Manifest.lock */,
 				37EEA4052435143600750CDB /* Sources */,
 				37EEA4062435143600750CDB /* Frameworks */,
 				37EEA4072435143600750CDB /* Resources */,
 				37F84888243515500078042B /* Embed Frameworks */,
+				E85A59B124B8E95CA7B3CF27 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -166,6 +176,48 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		C5D75D4CE908897F92040874 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Example-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E85A59B124B8E95CA7B3CF27 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Example/Pods-Example-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Example/Pods-Example-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Example/Pods-Example-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		37EEA4052435143600750CDB /* Sources */ = {
@@ -251,7 +303,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -305,7 +357,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -317,11 +369,14 @@
 		};
 		37EEA41E2435143700750CDB /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A044C3E52F7E9F119AA10B33 /* Pods-Example.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = FBQ6Z8AF3U;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = M6R3VL65AY;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
@@ -334,7 +389,11 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = dev.noppe.handTracker.Example;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "Example/Example-Bridging-Header.h";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "RND wildcard";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -343,11 +402,14 @@
 		};
 		37EEA41F2435143700750CDB /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = CD79B9A1357C0D0A1DD28571 /* Pods-Example.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = FBQ6Z8AF3U;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = M6R3VL65AY;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
@@ -360,7 +422,11 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = dev.noppe.handTracker.Example;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "Example/Example-Bridging-Header.h";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "RND wildcard";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

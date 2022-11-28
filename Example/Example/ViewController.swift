@@ -8,38 +8,54 @@
 
 import UIKit
 import AVFoundation
+import MediaPipeHands
 
-class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate, TrackerDelegate {
+class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate, MediaPipeGraphDelegate {
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var toggleView: UISwitch!
     let camera = Camera()
-    let tracker: HandTracker = HandTracker()!
     
+    var tracker: MediaPipeGraph?
+    
+    func setupGraph() throws -> MediaPipeGraph {
+        let url = Bundle(for: MediaPipeGraph.self).url(forResource: "hand_tracking_mobile_gpu", withExtension: "binarypb")!
+        
+        let hands = MediaPipeGraph(graphConfig: try Data(contentsOf: url))
+        hands.setSidePacket(.init(number: 2), named: "num_hands")
+
+        hands.delegate = self
+        hands.addFrameOutputStream("hand_landmarks", outputPacketType: .raw)
+        hands.addFrameOutputStream("output_video", outputPacketType: .pixelBuffer)
+        hands.delegate = self
+        try hands.start()
+        return hands
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         camera.setSampleBufferDelegate(self)
         camera.start()
-        tracker.startGraph()
-        tracker.delegate = self
+        
+        tracker = try! setupGraph()
+        
     }
     
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer)
-        tracker.processVideoFrame(pixelBuffer)
+        let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer)!
+        tracker?.send(pixelBuffer, intoStream: "input_video", packetType: .pixelBuffer)
         
         DispatchQueue.main.async {
             if !self.toggleView.isOn {
-                self.imageView.image = UIImage(ciImage: CIImage(cvPixelBuffer: pixelBuffer!))
+                self.imageView.image = UIImage(ciImage: CIImage(cvPixelBuffer: pixelBuffer))
             }
         }
     }
     
-    func handTracker(_ handTracker: HandTracker!, didOutputLandmarks landmarks: [Landmark]!) {
-        print(landmarks)
+    func mediapipeGraph(_ graph: MediaPipeGraph, didOutputPacket packet: MediaPipePacket, fromStream streamName: String) {
+        print(streamName)
     }
     
-    func handTracker(_ handTracker: HandTracker!, didOutputPixelBuffer pixelBuffer: CVPixelBuffer!) {
+    func mediapipeGraph(_ graph: MediaPipeGraph, didOutputPixelBuffer pixelBuffer: CVPixelBuffer, fromStream streamName: String, timestamp: MediaPipeTimestamp) {
         DispatchQueue.main.async {
             if self.toggleView.isOn {
                 self.imageView.image = UIImage(ciImage: CIImage(cvPixelBuffer: pixelBuffer))
