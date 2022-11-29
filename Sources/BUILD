@@ -15,7 +15,7 @@ ios_framework(
     deps = [
         "@ios_opencv//:OpencvFramework",
         ":core",
-        ":HandTrackerLibrary"
+        ":hands"
     ],
 )
 
@@ -34,13 +34,6 @@ objc_library(
     hdrs = [
         "MediaPipeGraph.h"
     ],
-    data = [
-        ":module",
-        "//mediapipe/graphs/hand_tracking:hand_tracking_mobile_gpu.binarypb",
-        "//mediapipe/modules/hand_landmark:hand_landmark_full.tflite",
-        "//mediapipe/modules/hand_landmark:handedness.txt",
-        "//mediapipe/modules/palm_detection:palm_detection_full.tflite",
-    ],
     sdk_frameworks = [
         "AVFoundation",
         "CoreGraphics",
@@ -53,23 +46,20 @@ objc_library(
         "//mediapipe/objc:mediapipe_input_sources_ios",
         "//mediapipe/objc:mediapipe_layer_renderer",
     ],
+    data = [
+        ":module"
+    ]
 )
 
-
 objc_library(
-    name = "HandTrackerLibrary",
+    name = "hands",
     data = [
-        "//mediapipe/graphs/hand_tracking:hand_tracking_mobile_gpu.binarypb",
         "//mediapipe/modules/hand_landmark:hand_landmark_full.tflite",
+        "//mediapipe/modules/hand_landmark:hand_landmark_tracking_gpu.binarypb",
         "//mediapipe/modules/hand_landmark:handedness.txt",
         "//mediapipe/modules/palm_detection:palm_detection_full.tflite",
     ],
-    deps = select({
-        "//mediapipe:ios_i386": [],
-        "//mediapipe:ios_x86_64": [],
-        "//conditions:default": [
-            "//mediapipe/graphs/hand_tracking:mobile_calculators",
-            "//mediapipe/framework/formats:landmark_cc_proto",
-        ],
-    }),
+    deps = [
+        "//mediapipe/modules/hand_landmark:hand_landmark_tracking_gpu",
+    ],
 )

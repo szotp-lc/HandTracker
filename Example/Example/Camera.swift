@@ -17,10 +17,12 @@ class Camera: NSObject {
     override init() {
         super.init()
         output.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String : kCVPixelFormatType_32BGRA]
+        
         session.addInput(input)
         session.addOutput(output)
         session.connections[0].videoOrientation = .portrait
         session.connections[0].isVideoMirrored = true
+        
     }
     
     func setSampleBufferDelegate(_ delegate: AVCaptureVideoDataOutputSampleBufferDelegate) {

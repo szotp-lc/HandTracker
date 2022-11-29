@@ -22,12 +22,13 @@ typedef int64_t MediaPipeTimestamp;
 
 @interface MediaPipePacket : NSObject
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithNumber:(NSInteger)number;
-- (instancetype)initWithFlag:(BOOL)number;
+- (instancetype)initWithInt32:(int32_t)value;
+- (instancetype)initWithBool:(BOOL)value;
+- (instancetype)initWithFloat:(float)value;
 
 -(NSArray<NSData *> *)getArrayOfProtos;
 @property (readonly) NSString *getTypeName;
-@property (readonly) MediaPipeTimestamp timestamp;
+@property MediaPipeTimestamp timestamp;
 @end
 
 /// A delegate that can receive frames from a MediaPipe graph.

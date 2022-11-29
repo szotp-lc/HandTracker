@@ -22,12 +22,16 @@
 @end
 @implementation MediaPipePacket
 
-- (instancetype)initWithNumber:(NSInteger)number {
-    return [self initWithPacket: mediapipe::MakePacket<int>(number)];
+- (instancetype)initWithInt32:(NSInteger)value {
+    return [self initWithPacket: mediapipe::MakePacket<int32_t>(value)];
 }
 
-- (instancetype)initWithFlag:(BOOL)number {
-    return [self initWithPacket: mediapipe::MakePacket<bool>(number)];
+- (instancetype)initWithFloat:(float)value {
+    return [self initWithPacket: mediapipe::MakePacket<float>(value)];
+}
+
+- (instancetype)initWithBool:(BOOL)value {
+    return [self initWithPacket: mediapipe::MakePacket<bool>(value)];
 }
 
 - (instancetype)initWithPacket:(const mediapipe::Packet)packet {
@@ -38,8 +42,12 @@
     return self;
 }
 
-- (int64)timestampMicroseconds {
+- (MediaPipeTimestamp)timestamp {
     return self.packet.Timestamp().Microseconds();
+}
+
+- (void)setTimestamp:(MediaPipeTimestamp)timestamp {
+    _packet = _packet.At(mediapipe::Timestamp(timestamp));
 }
 
 - (NSArray<NSData *> *)getArrayOfProtos {
