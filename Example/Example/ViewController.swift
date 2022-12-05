@@ -10,6 +10,7 @@ import UIKit
 import AVFoundation
 import MediaPipeHands
 
+
 class HandLandmarkTrackingGpu: NSObject, MediaPipeGraphDelegate {
     struct Output {
         let handLandmarks: [Data]
@@ -26,7 +27,8 @@ class HandLandmarkTrackingGpu: NSObject, MediaPipeGraphDelegate {
     func run(handler: @escaping (Output) -> Void) throws {
         let url = Bundle(for: MediaPipeGraph.self).url(forResource: "hand_landmark_tracking_gpu", withExtension: "binarypb")!
         
-        let graph = MediaPipeGraph(graphConfig: try Data(contentsOf: url))
+        let graph = try MediaPipeGraph(binaryGraphConfig: Data(contentsOf: url))
+        
         graph.setSidePacket(.init(int32: 2), named: "num_hands")
         graph.setSidePacket(.init(int32: 1), named: "model_complexity")
         graph.setSidePacket(.init(bool: true), named: "use_prev_landmarks")
@@ -94,15 +96,37 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
     let camera = Camera()
     
     let tracker = HandLandmarkTrackingGpu()
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        camera.setSampleBufferDelegate(self)
-        camera.start()
+//        camera.setSampleBufferDelegate(self)
+//        camera.start()
+//
+//        try! tracker.run { (output) in
+//            print(output.worldLandmarks.count)
+//        }
         
-        try! tracker.run { (output) in
-            print(output.worldLandmarks.count)
-        }
+        
+        let config = """
+        input_stream: "main_model_input"
+        output_stream: "main_model_output"
+          node {
+            calculator: "InferenceCalculator"
+            input_stream: "TENSORS:main_model_input"
+            output_stream: "TENSORS:main_model_output"
+            node_options: {
+              [type.googleapis.com/mediapipe.InferenceCalculatorOptions] {
+                model_path: "mediapipe/models/detection_model.tflite"
+              }
+            }
+          }
+        """
+        
+        let graph = MediaPipeGraph(textGraphConfig: config)
+        try! graph.start()
+        let packet = MediaPipePacket(bool: true)
+        packet.timestamp = 0
+        try! graph.send(packet, intoStream: "main_model_input")
     }
     
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {

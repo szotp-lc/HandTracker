@@ -14,6 +14,7 @@
 
 #import "MediaPipeGraph.h"
 #import "mediapipe/objc/MPPGraph.h"
+#include "mediapipe/framework/port/parse_text_proto.h"
 
 #define CSTR(str) [str cStringUsingEncoding:NSUTF8StringEncoding]
 
@@ -78,7 +79,7 @@
 
 @implementation MediaPipeGraph
 
-- (instancetype)initWithGraphConfig:(const NSData *)configData
+- (instancetype)initWithBinaryGraphConfig:(const NSData *)configData
 {
     self = [super init];
     if (self) {
@@ -86,10 +87,22 @@
         config.ParseFromArray(configData.bytes, configData.length);
         _graph = [[MPPGraph alloc] initWithGraphConfig:config];
         _graph.delegate = self;
+        
+        
     }
     return self;
 }
 
+- (instancetype)initWithTextGraphConfig:(const NSString *)configString
+{
+    self = [super init];
+    if (self) {
+        mediapipe::CalculatorGraphConfig config = mediapipe::ParseTextProtoOrDie<mediapipe::CalculatorGraphConfig>(CSTR(configString));
+        _graph = [[MPPGraph alloc] initWithGraphConfig:config];
+        _graph.delegate = self;
+    }
+    return self;
+}
 
 - (int) maxFramesInFlight {
     return _graph.maxFramesInFlight;

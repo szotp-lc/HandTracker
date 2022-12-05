@@ -32,7 +32,7 @@ objc_library(
         "MediaPipeGraph.mm"
     ],
     hdrs = [
-        "MediaPipeGraph.h"
+        "MediaPipeGraph.h",
     ],
     sdk_frameworks = [
         "AVFoundation",
@@ -42,6 +42,7 @@ objc_library(
         "AssetsLibrary",
     ],
     deps = [
+        "//mediapipe/framework/port:parse_text_proto",
         "//mediapipe/objc:mediapipe_framework_ios",
         "//mediapipe/objc:mediapipe_input_sources_ios",
         "//mediapipe/objc:mediapipe_layer_renderer",

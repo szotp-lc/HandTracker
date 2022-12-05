@@ -108,7 +108,12 @@ typedef NS_ENUM(int, MediaPipePacketType) {
 
 /// Copies the config and initializes the graph.
 /// @param config The configuration describing the graph.
-- (instancetype)initWithGraphConfig:(const NSData *)config
+- (instancetype)initWithBinaryGraphConfig:(const NSData *)config
+    NS_DESIGNATED_INITIALIZER;
+
+/// Copies the config and initializes the graph.
+/// @param config The configuration describing the graph.
+- (instancetype)initWithTextGraphConfig:(const NSString *)config
     NS_DESIGNATED_INITIALIZER;
 
 // - (mediapipe::ProfilingContext *)getProfiler;
